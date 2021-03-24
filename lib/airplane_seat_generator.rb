@@ -90,11 +90,10 @@ class AirplaneSeatGenerator
   class SeatSection
 
     attr_accessor :row, :col, :window_position
-    attr_reader :seat_count_by_categories, :current_seat_section_type, :seat_count_per_category, :seats_per_row
+    attr_reader :seat_count_by_categories, :seat_count_per_category, :seats_per_row
     
     def initialize(row:, col:, window_position:)
       @row, @col, @window_position = row, col, window_position
-      @current_seat_section_type = AISLE_TYPE
       @seat_count_by_categories = {
         AISLE_TYPE => [],
         WINDOW_TYPE => [],
