@@ -90,12 +90,12 @@ class AirplaneSeatGenerator
   class SeatSection
 
     attr_accessor :row, :col, :window_position
-    attr_reader :seat_categories, :current_seat_section_type, :seat_count_per_category, :seats_per_row
+    attr_reader :seat_count_by_categories, :current_seat_section_type, :seat_count_per_category, :seats_per_row
     
     def initialize(row:, col:, window_position:)
       @row, @col, @window_position = row, col, window_position
       @current_seat_section_type = AISLE_TYPE
-      @seat_categories = {
+      @seat_count_by_categories = {
         AISLE_TYPE => [],
         WINDOW_TYPE => [],
         CENTER_TYPE => []
@@ -117,18 +117,18 @@ class AirplaneSeatGenerator
     end
 
     def has_seats_available_for?(seat_type)
-      seat_categories[seat_type].size < seat_count_per_category[seat_type]
+      seat_count_by_categories[seat_type].size < seat_count_per_category[seat_type]
     end
 
     def please_sit_down!(passenger, seat_type, passengers_count)
       passenger.nil? and raise "Passenger is missing!"
-      current_category_seats_per_count = seat_count_per_category[seat_type]
-      passengers = seat_categories[seat_type]
+      seats_count_by_category = seat_count_per_category[seat_type]
+      passengers = seat_count_by_categories[seat_type]
 
       seats_per_row[seat_type].times do
         passengers.push(passenger)
         passenger += 1
-        break if passenger > passengers_count || passengers.size == current_category_seats_per_count
+        break if passenger > passengers_count || passengers.size == seats_count_by_category
       end
 
       return passenger
@@ -168,7 +168,7 @@ class AirplaneSeatGenerator
         
         center_type_row_builder = -> (index) {
           @center_seat_count_per_row.times do
-            arr[index].push seat_categories[seat_type][row_counter]
+            arr[index].push seat_count_by_categories[seat_type][row_counter]
             row_counter += 1
           end
         }
@@ -180,12 +180,12 @@ class AirplaneSeatGenerator
         else
           if window_position
             row.times do |n|
-              arr[n].push seat_categories[seat_type][n]
+              arr[n].push seat_count_by_categories[seat_type][n]
             end
           else
             row.times do |n|
-              arr[n].unshift(seat_categories[seat_type][row_counter])
-              arr[n].push(seat_categories[seat_type][row_counter + 1])
+              arr[n].unshift(seat_count_by_categories[seat_type][row_counter])
+              arr[n].push(seat_count_by_categories[seat_type][row_counter + 1])
               row_counter += 2
             end
           end
